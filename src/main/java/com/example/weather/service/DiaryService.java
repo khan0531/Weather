@@ -84,8 +84,13 @@ public class DiaryService {
     return resultMap;
   }
 
-
   public List<Diary> readDiary(LocalDate date) {
     return diaryRepository.findAllByDate(date);
+  }
+
+  public void updateDiary(LocalDate date, String text) {
+    Diary nowDiary = diaryRepository.getFirstByDate(date);
+    nowDiary.setText(text);
+    diaryRepository.save(nowDiary);
   }
 }

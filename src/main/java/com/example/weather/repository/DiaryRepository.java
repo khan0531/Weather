@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
   List<Diary> findAllByDate(LocalDate date);
+
+  Diary getFirstByDate(LocalDate date);
 }
