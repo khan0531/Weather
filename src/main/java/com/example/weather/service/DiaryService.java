@@ -6,7 +6,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +27,10 @@ public class DiaryService {
 
   public void createDiary(LocalDate date, String text) {
     //open weather map에서 날씨 데이터 가져옴
-   String weather =  getWeatherString();
+   String weatherData =  getWeatherString();
 
     // 받아온 날씨 json 파싱
-
+    Map<String, Object> weatherMap = parseWeather(weatherData);
     // 파싱된 데이터 + 일기 값 우리 db에 넣기
   }
 
@@ -54,7 +60,26 @@ public class DiaryService {
     }
   }
 
+  private Map<String, Object> parseWeather(String jsonString) {
+    JSONParser jsonParser = new JSONParser();
+    JSONObject jsonObject = new JSONObject();
 
+    try {
+      jsonObject =  (JSONObject) jsonParser.parse(jsonString);
+    } catch (ParseException e){
+      throw new RuntimeException(e);
+    }
+    Map<String, Object> resultMap = new HashMap<>();
+
+    JSONObject mainData = (JSONObject) jsonObject.get("main");
+    resultMap.put("temp", mainData.get("temp"));
+    JSONArray weatherArray = (JSONArray) jsonObject.get("weather");
+    JSONObject weatherData = (JSONObject) weatherArray.get(0);
+    resultMap.put("main", weatherData.get("main"));
+    resultMap.put("icon",  weatherData.get("icon"));
+
+    return resultMap;
+  }
 
 
 }
