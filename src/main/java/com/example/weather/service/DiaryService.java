@@ -17,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -92,5 +93,9 @@ public class DiaryService {
     Diary nowDiary = diaryRepository.getFirstByDate(date);
     nowDiary.setText(text);
     diaryRepository.save(nowDiary);
+  }
+
+  public void deleteDiary(LocalDate date) {
+    diaryRepository.deleteAllBy(date);
   }
 }
