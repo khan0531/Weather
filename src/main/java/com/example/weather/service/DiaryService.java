@@ -1,5 +1,6 @@
 package com.example.weather.service;
 
+import com.example.weather.WeatherApplication;
 import com.example.weather.domain.DateWeather;
 import com.example.weather.domain.Diary;
 import com.example.weather.repository.DateWeatherRepository;
@@ -13,10 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,8 +37,13 @@ public class DiaryService {
   private final DiaryRepository diaryRepository;
   private final DateWeatherRepository dateWeatherRepository;
 
+  private static final Logger logger = (Logger) LoggerFactory.getLogger(WeatherApplication.class);
+
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public void createDiary(LocalDate date, String text) {
+
+    logger.info("started to create diary");
+
     DateWeather dateWeather = getDataWeather(date);
 
     // 파싱된 데이터 + 일기 값 우리 db에 넣기
@@ -44,6 +52,8 @@ public class DiaryService {
     nowDiary.setText(text);
     nowDiary.setDate(date);
     diaryRepository.save(nowDiary);
+
+    logger.info("end to create diary");
   }
 
   private String getWeatherString() {
@@ -95,6 +105,8 @@ public class DiaryService {
 
   @Transactional(readOnly = true)
   public List<Diary> readDiary(LocalDate date) {
+    logger.debug("read diary");
+
     return diaryRepository.findAllByDate(date);
   }
 
@@ -111,6 +123,7 @@ public class DiaryService {
   @Transactional
   @Scheduled(cron = "0 0 1 * * *")
   public void saveWeatherDate() {
+    logger.info("성공");
     dateWeatherRepository.save(getWeatherFromApi());
   }
 
