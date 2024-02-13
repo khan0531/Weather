@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class DiaryService {
 
   @Value("${openweathermap.key}")
@@ -105,7 +105,7 @@ public class DiaryService {
   }
 
   public void deleteDiary(LocalDate date) {
-    diaryRepository.deleteAllBy(date);
+    diaryRepository.deleteAllByDate(date);
   }
 
   @Transactional
