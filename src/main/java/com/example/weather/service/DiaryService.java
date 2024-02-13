@@ -1,6 +1,8 @@
 package com.example.weather.service;
 
+import com.example.weather.domain.DateWeather;
 import com.example.weather.domain.Diary;
+import com.example.weather.repository.DateWeatherRepository;
 import com.example.weather.repository.DiaryRepository;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,14 +32,12 @@ public class DiaryService {
   private String apiKey;
 
   private final DiaryRepository diaryRepository;
+  private final DateWeatherRepository dateWeatherRepository;
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public void createDiary(LocalDate date, String text) {
-    //open weather map에서 날씨 데이터 가져옴
-   String weatherData =  getWeatherString();
+//    DateWeather dateWeather = getDataWeather(date);
 
-    // 받아온 날씨 json 파싱
-    Map<String, Object> weatherMap = parseWeather(weatherData);
     // 파싱된 데이터 + 일기 값 우리 db에 넣기
     Diary nowDiary = new Diary();
 //    nowDiary.setDateWeather(dateWeather);
@@ -111,5 +111,20 @@ public class DiaryService {
   @Transactional
   @Scheduled(cron = "0 0 1 * * *")
   public void saveWeatherDate() {
+    dateWeatherRepository.save(getWeatherFromApi());
+  }
+
+  private DateWeather getWeatherFromApi() {
+    //open weather map에서 날씨 데이터 가져오기.
+    String weatherData = getWeatherString();
+
+    // 받아온 날씨 json 파싱하기
+    Map<String, Object> parseWeather = parseWeather(weatherData);
+    DateWeather dateWeather = new DateWeather();
+    dateWeather.setDate(LocalDate.now());
+    dateWeather.setWeather(parseWeather.get("main").toString());
+    dateWeather.setIcon(parseWeather.get("icon").toString());
+    dateWeather.setTemperature((Double) parseWeather.get("temp"));
+    return dateWeather;
   }
 }
