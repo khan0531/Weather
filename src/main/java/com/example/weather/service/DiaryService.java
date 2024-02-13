@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,5 +106,10 @@ public class DiaryService {
 
   public void deleteDiary(LocalDate date) {
     diaryRepository.deleteAllBy(date);
+  }
+
+  @Transactional
+  @Scheduled(cron = "0 0 1 * * *")
+  public void saveWeatherDate() {
   }
 }
