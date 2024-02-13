@@ -1,5 +1,6 @@
 package com.example.weather.service;
 
+import com.example.weather.domain.Diary;
 import com.example.weather.repository.DiaryRepository;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -7,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -32,6 +34,7 @@ public class DiaryService {
     // 받아온 날씨 json 파싱
     Map<String, Object> weatherMap = parseWeather(weatherData);
     // 파싱된 데이터 + 일기 값 우리 db에 넣기
+
   }
 
   private String getWeatherString() {
@@ -82,4 +85,7 @@ public class DiaryService {
   }
 
 
+  public List<Diary> readDiary(LocalDate date) {
+    return diaryRepository.findAllByDate(date);
+  }
 }
