@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional(readOnly = true)
+@Transactional(readOnly = true)
 public class DiaryService {
 
   @Value("${openweathermap.key}")
@@ -38,12 +38,12 @@ public class DiaryService {
   private final DiaryRepository diaryRepository;
   private final DateWeatherRepository dateWeatherRepository;
 
-  private static final Logger logger = (Logger) LoggerFactory.getLogger(WeatherApplication.class);
+//  private static final Logger logger = (Logger) LoggerFactory.getLogger(WeatherApplication.class);
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public void createDiary(LocalDate date, String text) {
 
-    logger.info("started to create diary");
+//    logger.info("started to create diary");
 
     DateWeather dateWeather = getDataWeather(date);
 
@@ -54,7 +54,7 @@ public class DiaryService {
     nowDiary.setDate(date);
     diaryRepository.save(nowDiary);
 
-    logger.info("end to create diary");
+//    logger.info("end to create diary");
   }
 
   private String getWeatherString() {
@@ -106,11 +106,17 @@ public class DiaryService {
 
   @Transactional(readOnly = true)
   public List<Diary> readDiary(LocalDate date) {
-    logger.debug("read diary");
+//    logger.debug("read diary");
     if (date.isAfter(LocalDate.ofYearDay(3050, 1))){
       throw new InvalidDate();
     }
     return diaryRepository.findAllByDate(date);
+  }
+
+  @Transactional(readOnly = true)
+  public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
+//    logger.debug("read diary");
+    return diaryRepository.findAllByDateBetween(startDate, endDate);
   }
 
   public void updateDiary(LocalDate date, String text) {
@@ -126,7 +132,7 @@ public class DiaryService {
   @Transactional
   @Scheduled(cron = "0 0 1 * * *")
   public void saveWeatherDate() {
-    logger.info("성공");
+//    logger.info("성공");
     dateWeatherRepository.save(getWeatherFromApi());
   }
 
